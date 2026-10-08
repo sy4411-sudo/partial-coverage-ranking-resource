@@ -1,0 +1,470 @@
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\setlength{\emergencystretch}{2em}
+\usepackage{amsmath,amssymb,booktabs,array}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\begin{document}
+\title{Portable Verifiable Policies for Reranking with Partial Source Coverage}
+\titlerunning{Portable Verifiable Reranking Policies}
+\author{Shenghang Yuan\orcidID{0009-0008-7434-1103}}
+\authorrunning{S. Yuan}
+\institute{NYU Shanghai, Shanghai, China\\\email{sy4411@nyu.edu}}
+\maketitle
+\begin{abstract}
+Reranking experiments often combine a complete reference ranking with scores
+available for only some candidates. A constrained exposure vector is not,
+however, the stochastic policy that downstream software receives. We present
+a Python resource that preserves partial-coverage semantics, exports explicit
+ranking mixtures, and verifies their worst-case expected-nDCG regret against
+a separately supplied reference. The recipient reconstructs exposure from
+serialized permutations rather than trusting a solver's reported certificate.
+The resource includes a TREC run adapter, a text-to-policy retrieval example,
+a solver-independent checker, regression tests and an engineering benchmark.
+A saved synthetic sweep covers 26 workload/formulation combinations and 78
+timed repetitions, with no observed timeout or rejection under a 20-second
+per-worker limit and maximum exposure reconstruction discrepancy
+$3.46\times10^{-15}$. A bounded historical negative case illustrates why
+feasible policies do not by themselves establish useful certificate comparisons.
+The contribution is a reusable implementation and explicit exchange semantics,
+not a new regret theorem or evidence of retrieval-effectiveness improvement.
+Code, examples, aggregate evidence and this author manuscript are distributed
+as version 0.2.0 under Apache-2.0.
+\keywords{Research software \and Stochastic ranking \and Partial coverage \and Policy verification}
+\end{abstract}
+
+\section{Introduction}
+A retrieval researcher may have a reference ranking for every candidate but
+second-stage scores for only a subset. Computational budgets, model coverage
+and heterogeneous collections can all create this interface. Missing scores
+must then be distinguished from observed zero scores. When the desired output
+is randomized, there is a further boundary: an optimizer's fractional assignment
+is not yet an executable distribution over ranked lists.
+
+Expected exposure is an established way to represent stochastic rankings
+\cite{diaz,singh}. This resource addresses a narrow implementation need:
+exchange only the positions occupied by scored candidates, optimize a linear
+source-score objective, and bound worst-case \emph{expected} nDCG regret
+relative to a caller-supplied ranking for arbitrary nonnegative gains.
+The output must carry the property through mixture recovery, serialization
+and recipient-side checking. Sorting the optimized exposure vector does not
+provide that guarantee.
+
+Our contribution is a resource joining these steps with external
+candidate identifiers, strict input semantics, a TREC run adapter and an
+independently invoked recipient checker. Independence here means independence
+from the solver's claimed exposure and certificate, not a second independently
+developed mathematical library: the checker reuses the pure-Python regret
+oracle. Small exhaustive tests provide a separate check of that oracle.
+
+We provide a concrete text-to-policy workflow using BM25 and selectively
+computed TF-IDF cosine scores. It requires neither relevance labels nor model
+downloads and allows replacement of its invented corpus and queries.
+A saved engineering sweep characterizes optimization, mixture recovery and
+checking separately. A historical negative study is retained as a bounded
+use case, not rescued as an effectiveness contribution.
+
+The intended users are researchers who can retain stochastic ranking policies
+through their evaluation or downstream interface. The resource does not train
+a ranker, infer relevance, calibrate statistical risk, or certify a production
+sampler. It is also not a substitute for a human reuse study: no independent
+human adoption or measured developer-time saving is claimed in this version.
+
+\section{Relation to Existing Resources}
+PyTerrier supports retrieval-pipeline composition and TREC run exchange
+\cite{pyterrier}; ranx offers evaluation and fusion methods \cite{ranx}.
+They already address important parts of combining retrieval systems.
+We do not claim that another fusion API is novel. Our interface instead
+exports a ranking distribution with fixed unsupported positions and checks
+a reference-relative expected-regret constraint on the received object.
+
+Exposure-constrained ranking \cite{singh}, stochastic-ranking evaluation
+\cite{diaz}, and learning stochastic policies with fairness constraints
+\cite{fairpgrank} are established. FairSearch supplies ranked-representation
+checks and reranking \cite{fairsearch}, while FairDiverse provides tools for
+fairness and diversity experiments \cite{fairdiverse}. Public Birkhoff
+implementations already recover permutation mixtures from doubly stochastic
+matrices \cite{birkhoff}. None of these ingredients is claimed as a new theorem,
+a new decomposition algorithm or an industry-first system.
+
+Table~\ref{tab:capabilities} describes the documented roles
+of selected resources. It is neither an exhaustive absence claim nor a
+head-to-head speed comparison. Their objectives and guarantees differ.
+Our practical claim is that a tested, inspectable exchange boundary is useful
+for experiments requiring this particular constraint. Whether it reduces
+another researcher's integration work still requires direct reuse evidence.
+
+\begin{table}[t]
+\caption{Scope of the comparison; no universal superiority is implied.}
+\label{tab:capabilities}
+\small
+\begin{tabular}{p{.24\textwidth}p{.67\textwidth}}
+\toprule
+Resource & Relevant documented role and distinction\\
+\midrule
+PyTerrier / ranx & Retrieval composition, evaluation and fusion; upstream run producers for this resource.\\
+Fair-PGRank & Learns stochastic policies under fairness objectives; not the same reference-regret task.\\
+FairSearch / FairDiverse & Fairness checks, reranking or broader fairness/diversity experimentation.\\
+Birkhoff package & Assignment-to-permutation decomposition; one component rather than the full exchange interface.\\
+This resource & Partial-coverage fixed-slot policies, serialized mixtures, caller-bound expected-regret verification.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Statistical risk-control methods answer a different question.
+Conformal risk control and its non-exchangeable extensions
+\cite{crc,nonexchangeable} depend on calibration observations and assumptions
+or explicit distribution-shift terms. Inference-time stochastic ranking with
+risk control is a relevant ranking formulation \cite{isrr}.
+A pointwise worst-case certificate is not an empirical substitute for those
+methods. Conversely, a numerical utility difference does not establish
+certificate value when no risk excess was observed to be avoided.
+The general idea of a price of robustness is also classical \cite{bertsimas}.
+
+\section{Mathematical Object and Guarantee}
+\subsection{Inputs and policy family}
+For one query, let $D$ contain $n$ candidates and let $\pi_0$ be the complete
+reference permutation. A supported subset $S\subseteq D$ has finite source
+scores $s_i$ for exactly its members. Let
+$w_1\geq \cdots\geq w_k>0$ be position weights; positions after $k$ have
+weight zero. A policy $P$ is a finite distribution over full permutations.
+For every component, candidates outside $S$ keep their positions in $\pi_0$.
+Thus supported items may exchange their reference slots but cannot displace
+unsupported items.
+
+The exposure of item $i$ is
+\[
+ e_i(P)=\sum_{\pi} P(\pi)w_{\operatorname{pos}_{\pi}(i)},\qquad
+ e_i^0=w_{\operatorname{pos}_{\pi_0}(i)}.
+\]
+The solver maximizes the source-side surrogate
+$\sum_{i\in S}s_i e_i(P)$ subject to a regret budget $b\geq0$.
+The scores need not be relevance labels. Improving this objective does not
+establish improvement in measured nDCG.
+
+For a nonzero nonnegative gain vector $g$, define
+\[
+ \operatorname{IDCG}_w(g)=\sum_{j=1}^{k} w_j g_{(j)},\qquad
+ R(P;g)=\frac{\sum_i g_i(e_i^0-e_i(P))}
+                  {\operatorname{IDCG}_w(g)},
+\]
+where gains are sorted in decreasing order in the denominator.
+The all-zero vector contributes zero by convention. The certificate is
+$\max(0,\sup_{g\geq0,\,g\ne0} R(P;g))$.
+It uses the same weights in actual and ideal gain and is relative to the
+specified candidate universe, not documents omitted by first-stage retrieval.
+
+\subsection{Reused top-sum calculation}
+Write $\delta_i=e_i^0-e_i(P)$ and let $\delta_{[1]}\geq\cdots\geq
+\delta_{[n]}$. The existing oracle computes
+\begin{equation}
+ R^\star(P)=\max\left(0,\max_{1\leq m\leq n}
+ \frac{\sum_{j=1}^{m}\delta_{[j]}}
+      {\sum_{j=1}^{\min(m,k)}w_j}\right).
+ \label{eq:regret}
+\end{equation}
+For a binary relevant set of size $m$, the denominator is fixed, and the
+largest numerator is the sum of the $m$ largest exposure losses.
+For graded gains, a layer-cake decomposition writes $g$ as a nonnegative
+combination of nested binary level sets. Both numerator and ideal gain
+decompose with those same sets, so their ratio is a weighted average of
+binary-set ratios. Binary gains are themselves allowed; hence the bound is
+exact for this uncertainty set. We include the reasoning to define what the
+software checks, not as a new structural result.
+
+The historical optimizer offers compact and cutting-plane LP formulations
+and recovers a mixture of permutations through Birkhoff-style decomposition.
+The resource retains these implementations. Equivalent objectives need not
+produce identical mixtures, and tied source scores do not promise a
+deterministic reference-preserving tie break.
+
+\subsection{Recipient contract and numerical scope}
+A policy JSON object contains a schema identifier, context and mixture.
+Each mixture component contains a probability and a full ranking of string
+IDs. The recipient must supply its own expected context: reference ranking,
+supported items, weights and budget. It does not accept the embedded context
+as the authority.
+
+Verification rejects unknown fields, duplicate JSON keys, nonfinite numbers,
+duplicate or missing candidate IDs, invalid probabilities, altered context and
+movement of unsupported items. It checks all components, including those
+with zero probability. The total probability mass must differ from one by
+at most $10^{-12}$. Accepted probabilities are interpreted after division by
+that mass. The checker reconstructs exposure from the rankings and recomputes
+Eq.~\ref{eq:regret}; regret must be at most $b+10^{-9}$.
+The latter is an explicit floating-point acceptance tolerance, not an
+interval-arithmetic proof.
+
+The solver is not imported for checking: the recipient needs only Python's
+standard library and the resource's pure-Python oracle. Nevertheless, the
+checker does not authenticate the sender, establish optimization optimality,
+validate empirical utility, or inspect a live sampler. Replacing both the
+policy and the recipient's trusted context is outside its threat model.
+
+The guarantee concerns expectation over the normalized mixture. An individual
+sample can incur greater regret. Selecting the largest-probability component
+or sorting expected exposure changes the policy and invalidates reuse of its
+certificate unless the new object is checked separately.
+
+\section{Software Architecture and Research Workflow}
+\subsection{Interfaces and failure handling}
+The distribution separates the optimization core, policy exchange layer,
+run-file adapter and engineering harness. The public optimization wrapper maps
+external string IDs to core indices, supplies scores on exactly the supported
+subset, reconstructs full-ID ranking mixtures, and verifies its own export.
+The receiving checker is callable separately on JSON read from disk.
+
+The adapter accepts six-column TREC runs. Explicit ordinal ranks in the target
+file determine reference order; source-file scores determine coverage and
+objective coefficients. An absent source row means unsupported, not zero.
+An observed zero is supported. Extra source queries or documents outside the
+target universe are rejected. A query with no source rows receives its
+reference policy. Batch verification requires the exact expected query set:
+omitting a difficult query is not full-batch success.
+
+Diagnostics include the input role, offending line or query and relevant
+numerical discrepancies. The adapter keeps batches in memory and does not
+supply a service queue or per-query process isolation. The separate benchmark
+harness demonstrates bounded worker execution. Malformed input and solver
+failure do not silently become a successful constrained solution.
+
+A direct-solver example makes the wrapper's work inspectable. It manually maps
+IDs, calls the same core, maps mixtures back, serializes them and checks against
+the original context. Across nine small support/budget settings, source
+objectives agree within $10^{-8}$. This is interface equivalence, not a second
+solver validation or a lines-of-code proxy for usability.
+
+\subsection{From text retrieval to a checked policy}
+The supplied workflow uses \texttt{rank-bm25} 0.2.2 and scikit-learn 1.8.0
+\cite{rankbm25,sklearn}. Its default corpus contains 20 invented research
+snippets and four invented queries, with no qrels or natural-domain labels.
+For each query it performs the following steps:
+\begin{enumerate}
+\item Lowercase and tokenize text, retrieve 12 candidates with BM25, breaking
+equal scores by document ID.
+\item Compute unigram/bigram TF-IDF cosine scores only for the first six
+candidates. Features are fitted on the corpus, but second-stage query-document
+similarities are evaluated only on that subset.
+\item Write target and partial-source TREC files, create requests with cutoff
+five and regret budget $0.02$, and optimize policies.
+\item Serialize the full mixtures, then reconstruct expected contexts from
+the upstream run files and verify the received policies.
+\item Write the verification report and a provenance record containing input
+hashes, dependency versions, parameters and output hashes.
+\end{enumerate}
+
+Users can replace corpus and query files with lists of \texttt{id}/\texttt{text}
+objects, or replace the second-stage scoring component while retaining the
+run-file interface. IDs must be unique and whitespace-free. The example
+refuses to overwrite an existing output directory. A partial directory after
+failure is not evidence of successful verification.
+
+Both scorers are inexpensive lexical methods; this is not a claim of neural
+reranking or measured computational savings. Its purpose is to exercise a
+plausible research boundary using actual scoring libraries rather than
+pretyped scores. The default four-query run completed with verified policies.
+Regression tests additionally exercise source limits zero, one, six and twelve,
+duplicate IDs, extra input fields and malformed text. No relevance-effect
+conclusion is drawn from these checks.
+
+\section{Engineering Evaluation}
+\subsection{Protocol and evidence boundaries}
+The saved synthetic sweep varies candidate count, support size, cutoff,
+number of supported positions within the cutoff, score pattern and budget.
+It includes empty and singleton support, support below the cutoff, zero
+budget, tied scores, partial coverage and full coverage.
+There are 26 workload/formulation combinations with three timed repetitions
+each. Each worker has a 20-second wall limit and one untimed small warmup.
+Errors and timeouts are retained in the reporting structure. All 26
+combinations completed in the recorded run.
+
+Measurements were made on Windows 11, an Intel Family 6 Model 197 machine with
+14 logical processors, Python 3.12.14, SciPy 1.17.1 and NumPy 2.5.1.
+Thread-related environment variables were limited to one, without a claim of
+CPU pinning or independently verified solver thread counts.
+Three repetitions on one machine support descriptive measurements, not
+cross-machine latency guarantees or inferential performance comparisons.
+
+Warm complete time includes request construction, optimization and export
+checking, JSON round trip and another verification. Imports, startup and
+warmup are recorded separately. LP and mixture-recovery times are instrumented
+within this complete path. Peak working set includes interpreter and dependency
+overhead. It is not incremental memory allocated only by the LP.
+
+The measurements describe implementation 0.1.0. Preparation 0.1.1 improved
+diagnostics and added coverage fields. Public distribution 0.2.0 adds the
+retrieval workflow and publication packaging; the optimization core and regret
+oracle are unchanged. We do not relabel the historical timings as new-version
+measurements.
+
+\subsection{Observed costs and reconstruction}
+Table~\ref{tab:timing} gives selected rows; the release's summary script
+regenerates the complete table from the saved record without invoking a solver.
+Absent measurements remain unavailable rather than zero, and failed statuses
+are retained.
+
+\begin{table}[t]
+\caption{Selected local measurements: medians of three repetitions.
+Matched rows fix support at 100 and active supported slots at five.
+Times are milliseconds; memory is peak working set in MiB.}
+\label{tab:timing}
+\small
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{rrrrrr}
+\toprule
+$n/|S|$ & Active & Formulation & Complete & Recovery & MiB\\
+\midrule
+40/20 & 5 & Compact & 2.919 & 0.147 & 69.58\\
+40/20 & 5 & Cutting-plane & 31.734 & 0.166 & 70.65\\
+200/100 & 5 & Compact, matched & 9.049 & 0.903 & 72.16\\
+500/100 & 5 & Compact, matched & 11.333 & 0.931 & 72.62\\
+1000/100 & 5 & Compact, matched & 13.435 & 0.946 & 73.00\\
+500/500 & 10 & Compact & 125.947 & 33.354 & 97.75\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The fully covered 500-candidate workload illustrates that mixture recovery is
+a material part of the deliverable, not a negligible export detail.
+The matched cases hold support size, active supported slots and source scores
+fixed. An initial spread-support exploration had reduced active support as
+candidate count increased, confounding its scaling interpretation. The matched
+comparison was added during engineering exploration; it was not a preregistered
+confirmatory design.
+
+Across eight cases solved with both formulations, the maximum discrepancy
+between median source objectives is $6.66\times10^{-16}$.
+The maximum reconstructed-versus-solver exposure discrepancy across all
+repetitions is $3.46\times10^{-15}$. These checks concern numerical consistency,
+not relevance or semantic correctness of caller-supplied scores.
+The benchmark also exposes an operational limitation: tied source scores
+can produce movement without source-objective improvement.
+
+\subsection{Testing and reproducibility}
+Tests cover context binding, fixed unsupported slots, strict parsing, invalid
+probability mass, regret rejection, empty coverage, query completeness and
+round-trip export. Small instances enumerate binary relevance assignments;
+graded-gain tests check the reduction and numerical behavior. The release
+contains the tests, not just a claimed count.
+
+The CI workflow builds a noneditable wheel and first verifies a sample policy
+before installing SciPy. It then installs pinned retrieval/test dependencies,
+runs the retrieval and direct-solver examples and executes the portable tests
+on Windows and Ubuntu. These are installability and interface checks. Automated
+or agent-run trials do not establish independent human adoption. A separate
+human research-workflow reuse remains future evidence, not an implicit
+participant in this evaluation.
+
+\section{A Bounded Negative Case and Its Lesson}
+The motivating study used MIND-small \cite{mind}. Its original theoretical and
+empirical full-paper routes were terminated rather than extended through
+additional rescue experiments. The empirical case here is restricted to the
+train-only study, six target-blocked ranker pairs, three risk levels and
+binary expected-nDCG@10. The same 512 final-evaluation impressions were used
+across pair/risk cells; those cells are not independent replications of a domain.
+
+Two implemented statistical controls selected the largest tested path point.
+Their measured mean-risk excess supplied no positive excess for the
+per-impression certificate to avoid. Utility differences were nevertheless
+numerically measurable: the maximum absolute temporal-control-minus-certified
+mean difference across 18 cells was approximately $0.000557$.
+Thus the problem was not inability to calculate a difference, but lack of
+evidence for interpreting that difference as the utility price of \emph{observed
+avoided risk}. This does not establish policy equivalence, rule out ex-ante
+assurance value, or imply the adversarial constraint was slack.
+
+The release supplies selected aggregate decision rows with the source aggregate
+hash. This is a transparent secondary record, not a fully independently
+reproducible natural-domain study: raw data, individual effects and private
+execution receipts are not redistributed. The historical case is not the
+resource's effectiveness claim. The earlier held-out pilot lacks a recoverable
+effect distribution and is not pooled with this case or made a headline result.
+
+The transferable experimental lesson is modest: check whether the intended
+comparison is active before scaling a certificate study. A valid exported
+policy is necessary for that study, but cannot make an inactive empirical
+comparison scientifically informative. Neither a zero observed mean-risk excess
+nor this small sample establishes a population per-impression violation bound.
+
+\section{Availability, Maintenance and Limitations}
+Version 0.2.0 is distributed at:
+\begin{center}\small
+\url{https://github.com/sy4411-sudo/partial-coverage-ranking-resource}
+\end{center}
+The tagged release contains a source archive, wheel, this manuscript PDF and
+SHA-256 checksums. The source inventory records the sizes and hashes of
+allowlisted payload files. GitHub releases provide versioned access, but are
+not a cryptographically immutable preservation service. No DOI or PyPI
+publication is claimed. The package has no mandatory solver dependency;
+the retrieval extra pins the tested scoring stack.
+
+Code, documentation and invented examples use Apache-2.0. Third-party
+dependencies retain their licenses, and no MIND data or private feedback is
+redistributed. Citation metadata names the author, affiliation and ORCID.
+Issues should use minimal synthetic examples rather than private identifiers
+or raw logs. This is maintained research software without a production SLA.
+
+Several limitations are material. The recipient and solver share a mathematical
+oracle; finite tests are not a formal proof of every implementation path.
+The API handles in-memory batches, not distributed production execution.
+There is no live-sampler audit. The lexical example demonstrates integration,
+not effectiveness on a second natural domain. Timing evidence is local and
+historical. Independent human reuse and measured integration effort remain
+unavailable. The manuscript is an unsubmitted author draft, not a claim of
+acceptance or complete adoption evidence.
+
+\section{Conclusion}
+This resource makes the boundary between constrained ranking optimization
+and exchanged stochastic policies explicit. It supplies fixed-slot partial
+coverage, full-ID mixtures, recipient-bound verification, TREC interoperability,
+a text-to-policy integration and inspectable engineering evidence.
+Its value must be assessed as reusable research infrastructure, not as a new
+regret theorem or a revived empirical improvement claim. The negative case
+reinforces a separate discipline: verify that the comparison of interest
+actually activates before investing in larger experiments.
+
+\paragraph{AI assistance disclosure.}
+AI tools assisted software development, checks and manuscript drafting.
+The author is responsible for reviewing the code, evidence and claims.
+Automated checks are not described as independent human validation.
+
+\begin{thebibliography}{15}
+\bibitem{diaz} Diaz, F., Mitra, B., Ekstrand, M.D., Biega, A.J., Carterette, B.:
+Evaluating Stochastic Rankings with Expected Exposure. SIGIR, 113--122 (2020).
+\doi{10.1145/3397271.3401098}
+\bibitem{singh} Singh, A., Joachims, T.: Fairness of Exposure in Rankings.
+KDD, 2219--2228 (2018). \doi{10.1145/3219819.3220088}
+\bibitem{pyterrier} PyTerrier contributors: Operators and I/O documentation.
+\url{https://pyterrier.readthedocs.io/en/stable/operators.html};
+\url{https://pyterrier.readthedocs.io/en/stable/io.html}. Accessed 7 October 2026.
+\bibitem{ranx} ranx contributors: Fusion documentation.
+\url{https://amenra.github.io/ranx/fusion/}. Accessed 7 October 2026.
+\bibitem{fairpgrank} Singh, A., Joachims, T.: Policy Learning for Fairness in Ranking.
+NeurIPS (2019). \url{https://github.com/ashudeep/Fair-PGRank}
+\bibitem{fairsearch} FairSearch contributors: FairSearch Python library.
+\url{https://github.com/fair-search/fairsearch-fair-python}. Accessed 7 October 2026.
+\bibitem{fairdiverse} FairDiverse contributors: FairDiverse research platform.
+\url{https://github.com/XuChen0427/FairDiverse}. Accessed 7 October 2026.
+\bibitem{birkhoff} Finkelstein, J.: Birkhoff decomposition implementation.
+\url{https://github.com/jfinkels/birkhoff}. Accessed 7 October 2026.
+\bibitem{crc} Angelopoulos, A.N., Bates, S., Fisch, A., Lei, L., Schuster, T.:
+Conformal Risk Control. ICLR (2024). \url{https://arxiv.org/abs/2208.02814}
+\bibitem{nonexchangeable} Farinhas, A., Zerva, C., Ulmer, D., Martins, A.F.T.:
+Non-Exchangeable Conformal Risk Control. ICLR (2024).
+\url{https://arxiv.org/abs/2310.01262}
+\bibitem{isrr} Guo, R., Ton, J.-F., Liu, Y., Li, H.:
+Inference-time Stochastic Ranking with Risk Control (2023).
+\url{https://arxiv.org/abs/2306.07188}
+\bibitem{bertsimas} Bertsimas, D., Sim, M.: The Price of Robustness.
+Operations Research 52(1), 35--53 (2004). \doi{10.1287/opre.1030.0065}
+\bibitem{rankbm25} Brown, D.: Rank-BM25, version 0.2.2.
+\url{https://github.com/dorianbrown/rank_bm25}. Accessed 7 October 2026.
+\bibitem{sklearn} scikit-learn contributors: TfidfVectorizer documentation.
+\url{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html}.
+Accessed 7 October 2026.
+\bibitem{mind} Wu, F., et al.: MIND: A Large-scale Dataset for News Recommendation.
+ACL, 3597--3606 (2020). \doi{10.18653/v1/2020.acl-main.331}
+\end{thebibliography}
+\end{document}

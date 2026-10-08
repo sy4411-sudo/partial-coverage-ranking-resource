@@ -1,0 +1,13 @@
+{
+  "schema": "metric-aligned-ranking.policy.v1",
+  "context": {
+    "target_ranking": ["doc-a", "fixed-b", "doc-c", "fixed-d"],
+    "supported_items": ["doc-a", "doc-c"],
+    "position_weights": [1.0, 0.6309297535714575],
+    "risk_budget": 0.1
+  },
+  "mixture": [
+    {"probability": 0.9, "ranking": ["doc-a", "fixed-b", "doc-c", "fixed-d"]},
+    {"probability": 0.1, "ranking": ["doc-c", "fixed-b", "doc-a", "fixed-d"]}
+  ]
+}

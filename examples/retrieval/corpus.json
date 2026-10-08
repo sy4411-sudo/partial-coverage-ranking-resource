@@ -1,0 +1,22 @@
+[
+  {"id":"doc01","text":"Randomized ranking policies distribute exposure across documents. Expected exposure depends on position weights and mixture probabilities."},
+  {"id":"doc02","text":"A ranking policy can preserve unsupported candidate positions while reranking documents with available source scores."},
+  {"id":"doc03","text":"Independent policy verification reconstructs expected exposure from serialized ranking mixtures and checks a reference regret budget."},
+  {"id":"doc04","text":"A budgeted retrieval pipeline retrieves candidates with BM25 and scores a smaller candidate subset using a second stage model."},
+  {"id":"doc05","text":"Missing source scores indicate absent coverage. A score of zero is still an observed source score."},
+  {"id":"doc06","text":"TREC run files exchange query identifiers document identifiers ordinal ranks and retrieval scores between research tools."},
+  {"id":"doc07","text":"Conformal risk control uses calibration observations. Exchangeability assumptions differ from pointwise worst case guarantees."},
+  {"id":"doc08","text":"A certificate constrains expected metric regret but does not establish empirical improvement or guarantee each sampled ranking."},
+  {"id":"doc09","text":"Research artifacts need installation instructions versioned releases licenses and reproducible examples."},
+  {"id":"doc10","text":"Source score fusion combines multiple scoring systems. Reciprocal rank fusion uses ordinal rank information."},
+  {"id":"doc11","text":"BM25 uses term frequency document frequency and document length to score lexical matches."},
+  {"id":"doc12","text":"TF IDF cosine similarity compares normalized sparse text vectors with unigram and bigram features."},
+  {"id":"doc13","text":"User studies examine whether another researcher can integrate software into an existing experimental workflow."},
+  {"id":"doc14","text":"Sorting expected exposures produces a deterministic ranking that need not inherit the stochastic policy certificate."},
+  {"id":"doc15","text":"Birkhoff decomposition recovers a distribution over permutations from a doubly stochastic assignment matrix."},
+  {"id":"doc16","text":"Engineering benchmarks separate solver time decomposition time serialization overhead and memory use."},
+  {"id":"doc17","text":"A complete reference ranking defines the candidate universe. The risk budget is measured in absolute expected nDCG units."},
+  {"id":"doc18","text":"News recommendation experiments can have concentrated effects. Average improvement alone does not describe individual outcomes."},
+  {"id":"doc19","text":"An evaluation should test whether the comparison axis activates before scaling to more datasets and rankers."},
+  {"id":"doc20","text":"Secure artifact publishing excludes credentials private logs raw user identifiers and copyrighted evaluation data."}
+]

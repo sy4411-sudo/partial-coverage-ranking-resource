@@ -1,0 +1,6 @@
+toy-1 Q0 doc-a 1 4.0 invented-target
+toy-1 Q0 fixed-b 2 3.0 invented-target
+toy-1 Q0 doc-c 3 2.0 invented-target
+toy-1 Q0 fixed-d 4 1.0 invented-target
+toy-2 Q0 item-x 1 0.9 invented-target
+toy-2 Q0 item-y 2 0.4 invented-target

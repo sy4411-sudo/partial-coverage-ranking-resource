@@ -1,0 +1,28 @@
+[project]
+name = "metric-aligned-ranking"
+version = "0.2.0"
+description = "Portable verifiable stochastic reranking policies with partial source coverage"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{name = "Shenghang Yuan", email = "sy4411@nyu.edu"}]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/sy4411-sudo/partial-coverage-ranking-resource"
+Issues = "https://github.com/sy4411-sudo/partial-coverage-ranking-resource/issues"
+
+[project.optional-dependencies]
+solver = ["scipy==1.17.1"]
+retrieval = ["scipy==1.17.1", "numpy==2.5.1", "rank-bm25==0.2.2", "scikit-learn==1.8.0", "joblib==1.6.0", "threadpoolctl==3.7.0", "cloudpickle==3.1.2"]
+test = ["pytest==9.1.1"]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["metric_aligned_ranking*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

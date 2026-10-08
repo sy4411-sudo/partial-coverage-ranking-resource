@@ -22,7 +22,8 @@ ranking mixtures, and checks worst-case expected-nDCG regret at the recipient.
 The checker reconstructs exposure from serialized permutations against a
 separately supplied reference, rather than trusting solver-reported exposure.
 The resource includes a TREC run adapter, a text-to-policy retrieval example,
-a solver-independent checker, regression tests and an engineering benchmark.
+a solver-independent checker, downstream evaluation and sampling recipes,
+regression tests and an engineering benchmark.
 A saved synthetic sweep covers 26 workload/formulation combinations and 78
 timed repetitions, with no observed timeout or rejection under a 20-second
 per-worker limit and maximum exposure reconstruction discrepancy
@@ -32,7 +33,8 @@ The contribution is a tested exchange interface for a specific class of
 reranking experiments, not a new regret theorem. The evidence establishes
 executable integration and numerical consistency; independent human reuse
 and retrieval-effectiveness improvement are not established. Code, examples
-and aggregate evidence are available in the Apache-2.0 release 0.2.1.
+and aggregate evidence are available in the Apache-2.0 release 0.2.1;
+the downstream recipes are an unreleased extension in this working draft.
 \keywords{Research software \and Stochastic ranking \and Partial coverage \and Policy verification}
 \end{abstract}
 
@@ -237,8 +239,9 @@ Policy export & Source scorer, cutoff and budget choice &
 Full-ID ranking mixtures; fixed-slot and probability checks after recovery\\
 Recipient check & Trusted context stored separately from the received policy &
 Exact query-set/context matching; exposure reconstruction; regret recomputation\\
-Subsequent use & Sampling procedure and any relevance evaluation &
-Feasibility report, not a sampler audit or utility estimate\\
+Subsequent use & Evaluation judgments and deployment sampling behavior &
+Example consumer: finite-mixture evaluation and sampling diagnostics;
+not a live-sampler audit\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -271,7 +274,7 @@ glue code.
 The supplied workflow uses \texttt{rank-bm25} 0.2.2 and scikit-learn 1.8.0
 \cite{rankbm25,sklearn}. Its default corpus contains 20 invented research
 snippets and four invented queries, with no qrels or natural-domain labels.
-For each query it performs the following steps:
+The label-free producer performs the following steps for each query:
 \begin{enumerate}
 \item Lowercase and tokenize text, retrieve 12 candidates with BM25, breaking
 equal scores by document ID.
@@ -300,6 +303,36 @@ Regression tests additionally exercise source limits zero, one, six and twelve,
 duplicate IDs, extra input fields and malformed text. No relevance-effect
 conclusion is drawn from these checks.
 
+\subsection{Using the policy downstream}
+A separate, solver-free consumer completes the example through evaluation.
+It verifies the received policies against separately retained requests before
+computing metrics from evaluation gains. It requires a finite nonnegative gain for every
+candidate and rejects missing judgments rather than assigning zero. Gains are
+not exponentiated as relevance grades. The ideal denominator uses the same
+candidate universe and position weights; all-zero gain queries receive zero
+and remain in the reported macro-average.
+
+For each query, the consumer enumerates the normalized mixture to calculate
+expected nDCG, cross-checks it against exposure-weighted evaluation, and samples
+components with a recorded seed. Sampling supplies diagnostic counts and means,
+not the certificate. The text-workflow gain file contains illustrative assignments
+added for integration testing, not independent judgments or held-out evidence.
+Neither the producer nor the optimizer receives that file. Users can substitute
+their own completely judged candidate sets without changing the exchange format.
+
+Five further constructed cases make policy misuse observable. With reference
+$[a,f,b]$, supported items $\{a,b\}$, cutoff one and source scores favoring $b$,
+budget $0.6$ produces a mixture placing $b$ first with probability $0.6$.
+Gains favoring $a$ yield expected nDCG $0.4$; gains favoring $b$ yield $0.6$.
+Taking the largest-probability component, or sorting expected exposures within
+supported slots, instead puts $b$ first deterministically and has worst-case
+regret one. Both replacements fail the original budget. At budget $0.2$, both
+replacements retain the reference and pass, yet change expected nDCG from $0.2$
+to zero when gains favor $b$. The remaining cases exercise no-coverage fallback
+and all-zero gains. These are deliberately chosen counterexamples, not estimates
+of failure prevalence. Tests send both the direct-core and public-interface
+outputs through this consumer and recover the hand-computable endpoints.
+
 \section{Engineering Evaluation}
 \subsection{Questions and evidence}
 The evaluation asks whether the exchanged policy preserves its contract, what
@@ -326,6 +359,9 @@ One machine; three repeats; historical 0.1.0 timings\\
 BM25/TF-IDF text workflow &
 Can real scoring libraries feed the public interfaces? &
 Invented text; agent-run, not human reuse\\
+Downstream consumer and five constructed cases &
+Can a recipient evaluate and sample the policy without silently changing it? &
+Illustrative gains; finite checks, not adoption or effectiveness\\
 Selected MIND-small aggregates &
 Why can a valid certificate comparison still be uninformative? &
 Bounded historical case; not an independently reproduced study\\
@@ -418,6 +454,10 @@ before installing SciPy. It then installs pinned retrieval/test dependencies,
 runs the retrieval and direct-solver examples and executes the portable tests
 on Windows and Ubuntu. Both hosted jobs for release 0.2.0 passed 145 tests.
 These are installability and interface checks, not independent human adoption.
+The unreleased extension adds 22 downstream tests; all 173 portable tests passed
+locally. A fresh environment evaluated the text-workflow policies using the
+noneditable wheel without SciPy. This is local installability evidence, not
+hosted cross-platform validation of the candidate.
 
 \section{A Bounded Negative Case and Its Lesson}
 The motivating MIND-small study \cite{mind} illustrates the distinction between
@@ -450,13 +490,17 @@ comparison scientifically informative. Neither a zero observed mean-risk excess
 nor this small sample establishes a population per-impression violation bound.
 
 \section{Availability, Maintenance and Limitations}
-Version 0.2.1 is distributed at:
+The latest public release, version 0.2.1, is distributed at:
 \begin{center}\small
 \url{https://github.com/sy4411-sudo/partial-coverage-ranking-resource}
 \end{center}
 The tagged release contains a source archive, wheel, an author-manuscript
 PDF and SHA-256 checksums. Version 0.2.1 pairs this revised manuscript with the
 numerical-input correction above; the earlier 0.2.0 assets remain unchanged.
+The downstream evaluation examples described here belong to working candidate
+0.3.0, not that released archive. This revised manuscript must not be
+confused with the 0.2.1 release PDF. A subsequent versioned release must include
+the new examples before they can support a submitted resource claim.
 The source inventory records the sizes and hashes of
 allowlisted payload files. GitHub releases provide versioned access, but are
 not a cryptographically immutable preservation service. No DOI or PyPI
@@ -504,6 +548,9 @@ This resource makes the boundary between constrained ranking optimization
 and exchanged stochastic policies explicit. It supplies fixed-slot partial
 coverage, full-ID mixtures, recipient-bound verification, TREC interoperability,
 a text-to-policy integration and inspectable engineering evidence.
+The working extension connects that output to explicit evaluation-only gains,
+finite-mixture metrics and sampling diagnostics, including cases where
+deterministic substitutions change or invalidate the policy.
 It is intended for researchers who need to transfer and check this particular
 policy object without reimplementing its exchange semantics. The tests,
 measured workloads and text integration support that technical capability;
@@ -512,9 +559,8 @@ the next evidence gap. The negative case reinforces a separate lesson:
 verify that a comparison actually activates before scaling the experiment.
 
 \paragraph{AI assistance disclosure.}
-AI tools assisted software development, checks and manuscript drafting.
-The author is responsible for reviewing the code, evidence and claims.
-Automated checks are not described as independent human validation.
+AI tools assisted coding, checks and drafting; the author retains responsibility.
+Automated checks are not independent human validation.
 
 \begin{thebibliography}{15}
 \bibitem{diaz} Diaz, F., Mitra, B., Ekstrand, M.D., Biega, A.J., Carterette, B.:

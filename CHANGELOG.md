@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0 - unreleased
+
+Adds a solver-free downstream evaluation recipe, separate illustrative gains
+for the text workflow, five hand-computable policy-use cases, and tests of both
+public-interface and direct-core outputs at the evaluation boundary. The new
+consumer checks complete judgments, calculates expected metrics and reports
+sampling diagnostics. It rechecks deterministic replacements as new policies.
+Adds the previously omitted direct-solver comparison guide to the source
+allowlist. No optimizer, verifier, historical study or released asset changes.
+The revised manuscript is a working draft, not the released 0.2.1 manuscript.
+
 ## 0.2.1 - 2026-10-08
 
 The portable policy interface now requires the first position weight to equal

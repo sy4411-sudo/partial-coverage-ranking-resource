@@ -41,3 +41,8 @@ the largest-probability ranking or a sort of expected exposure and retain the
 same guarantee. The guarantee is in expectation over the emitted mixture,
 for arbitrary nonnegative gains on the supplied candidate universe; it is not
 a bound on every random draw, empirical accuracy, or the wider corpus.
+
+For the next step, use the [downstream evaluation recipe](../evaluation/README.md).
+It takes this workflow's saved requests and policies, attaches a separate
+illustrative gain file, computes expected nDCG and samples the mixture without
+importing a solver. The supplied assignments are invented, not relevance evidence.

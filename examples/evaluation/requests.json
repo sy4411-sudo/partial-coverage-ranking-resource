@@ -1,0 +1,7 @@
+{
+  "reference_gain": {"context": {"target_ranking": ["a", "fixed", "b"], "supported_items": ["a", "b"], "position_weights": [1.0], "risk_budget": 0.6}, "source_scores": {"a": 0.0, "b": 1.0}},
+  "source_gain": {"context": {"target_ranking": ["a", "fixed", "b"], "supported_items": ["a", "b"], "position_weights": [1.0], "risk_budget": 0.6}, "source_scores": {"a": 0.0, "b": 1.0}},
+  "small_budget": {"context": {"target_ranking": ["a", "fixed", "b"], "supported_items": ["a", "b"], "position_weights": [1.0], "risk_budget": 0.2}, "source_scores": {"a": 0.0, "b": 1.0}},
+  "no_coverage": {"context": {"target_ranking": ["a", "fixed", "b"], "supported_items": [], "position_weights": [1.0], "risk_budget": 0.6}, "source_scores": {}},
+  "zero_gain": {"context": {"target_ranking": ["a", "fixed", "b"], "supported_items": ["a", "b"], "position_weights": [1.0], "risk_budget": 0.6}, "source_scores": {"a": 0.0, "b": 1.0}}
+}

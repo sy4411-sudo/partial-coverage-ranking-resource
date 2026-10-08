@@ -1,6 +1,6 @@
 {
   "schema": "ranking.public-distribution.v1",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "scope": "allowlisted software, invented examples, aggregate evidence and manuscript",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "bytes": 1255,
-      "sha256": "941b01e72f0d921a4cc8da0a14d9ff64524e14e0b53eb78f04f0b9a81b36cfc1"
+      "bytes": 1486,
+      "sha256": "1a0d197934a72b223f6b5d174e87821310014af406846c27e11c734790f77627"
     },
     {
       "path": ".gitignore",
@@ -20,23 +20,48 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1691,
-      "sha256": "732dfdc6273cfb671bce60b447f7b53a6265a7e769e39abd916ec9db7a8441ef"
+      "bytes": 2333,
+      "sha256": "05a047997af7826f342255823c07a23511e86f5580b4bd18c3d54cb5e6394a0c"
     },
     {
       "path": "CITATION.cff",
-      "bytes": 581,
-      "sha256": "9e82a1b236ab221b10e17ceff5f0836112d40eaa294b61198725810d709a9aec"
+      "bytes": 535,
+      "sha256": "d842acc35c401e106ec8d29fc69f50e147cde64ddb2c95001efa92aeb1f63768"
     },
     {
       "path": "EVIDENCE.md",
-      "bytes": 2360,
-      "sha256": "67da5e5a2a57b1012b096a6625ae8f65c8aae3de2d684f0fa06764a7fab4115f"
+      "bytes": 3011,
+      "sha256": "67252165e08124dd0a9eaf03f13c7cb080b985040a2c6ba93a798a5cd12e7862"
+    },
+    {
+      "path": "examples/direct_solver_comparison.md",
+      "bytes": 4825,
+      "sha256": "63567de86225026abe8d4a605b97ee800944098ff9b821c47674b0300a59f63a"
     },
     {
       "path": "examples/direct_solver_comparison.py",
       "bytes": 4232,
       "sha256": "82e1e1edd24ad1b45a2d8cada897c0c365e431bb633612772d8989731b6218a2"
+    },
+    {
+      "path": "examples/downstream_evaluation.py",
+      "bytes": 8217,
+      "sha256": "8323484c7ea36459c50bab5dc984e533c366e613c01d677156ea5e606a151575"
+    },
+    {
+      "path": "examples/evaluation/gains.json",
+      "bytes": 270,
+      "sha256": "1d300b35c90e39c01b3352b0dc2de5923477598c4be383f4f101eda865e51ff0"
+    },
+    {
+      "path": "examples/evaluation/README.md",
+      "bytes": 5985,
+      "sha256": "266dd90a7d593433db2a7632ee07dac082005c94e91aa3ed20d6d28e5331260d"
+    },
+    {
+      "path": "examples/evaluation/requests.json",
+      "bytes": 919,
+      "sha256": "26089e26129d4548343f5a19e16501672cf2d9627002a2de06d6922830e866fe"
     },
     {
       "path": "examples/policy_context.json",
@@ -64,14 +89,19 @@
       "sha256": "010527acdeb5dd835dcf3c700c4caf95cf3afde4127837103678bf73515e6984"
     },
     {
+      "path": "examples/retrieval/illustrative_gains.json",
+      "bytes": 639,
+      "sha256": "620e575308f3d318c5a38f9a5b73fda2f59522b640c5f4582760a56080228b26"
+    },
+    {
       "path": "examples/retrieval/queries.json",
       "bytes": 307,
       "sha256": "b87ad8789b2d203695e701dacb16690d29d6442f5fdc82c8d9120114a4685d0a"
     },
     {
       "path": "examples/retrieval/README.md",
-      "bytes": 2544,
-      "sha256": "3bfd7cc016965141c330c234ef8476df4bc065ef35673378d0101c74dfbf1457"
+      "bytes": 2865,
+      "sha256": "f4b975811f83b54dd5c1bb3d40bb46c995d81577fd386f003c74e3b9998ee3c7"
     },
     {
       "path": "examples/retrieval_workflow.py",
@@ -150,18 +180,18 @@
     },
     {
       "path": "paper/resource/main.tex",
-      "bytes": 31477,
-      "sha256": "2b9ad76a8e749d684cc524aa1555c5239b29b662848f10ab9d7650f46cb1cc20"
+      "bytes": 34649,
+      "sha256": "e56ed1766e5bb8e8d0d2f357c19ed63fb1e54126d532dcce4aa00ad95354228c"
     },
     {
       "path": "pyproject.toml",
       "bytes": 930,
-      "sha256": "f0da55f7fd4bf9ec841c62b00651ca89aee1406406fc366d11f90f4fa49f8c03"
+      "sha256": "849dbd02333684bad20a49d4cf7efb42b6a0596d21dbe73e363a6a7dce0e9d02"
     },
     {
       "path": "README.md",
-      "bytes": 7162,
-      "sha256": "d37c38a942784ec95e3358848870ab0bcc52ab5e369225de50ac7281e209a642"
+      "bytes": 7488,
+      "sha256": "b13bee610dfb856bb3dcf58a4798aced8bc9e2b5943d77b6ab4e7af3c7797e82"
     },
     {
       "path": "records/case-study-summary.json",
@@ -182,6 +212,11 @@
       "path": "tests/test_direct_solver_comparison.py",
       "bytes": 1147,
       "sha256": "f766529544f46a61e4ef5d181923943ff22b2fc4da1f187d63dab26caa867999"
+    },
+    {
+      "path": "tests/test_downstream_evaluation.py",
+      "bytes": 7645,
+      "sha256": "1461fbbe58d6a2d16becf88b48eecf2fda2eb8dd7d8885960ff9929caafab05d"
     },
     {
       "path": "tests/test_metric_aligned_graded_ndcg.py",

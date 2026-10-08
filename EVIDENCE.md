@@ -18,6 +18,17 @@ the harness produces new timings, not bit-identical historical measurements.
 The matched-support cases were exploratory corrections to an initial confounded
 scaling comparison, not a preregistered experiment.
 
+## Downstream use checks
+
+The unreleased 0.3.0 candidate additionally contains a downstream evaluation
+recipe. Its text-workflow gains are illustrative assignments, not independent
+relevance judgments. Five constructed cases have hand-computable expected
+metrics and show both invalid and still-feasible deterministic replacements.
+They establish executable endpoint handling, not misuse prevalence or efficacy.
+The consumer records the Python version and sampling seed, enumerates the
+finite mixture for its expected metric, and treats sampled means as diagnostics.
+The optimizer never receives these gain files. No historical label stream is used.
+
 ## Bounded historical case
 
 `records/case-study-summary.json` is an explicitly selected aggregate export

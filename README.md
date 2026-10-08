@@ -1,8 +1,11 @@
 # Metric-aligned ranking: a portable policy resource
 
-**Version 0.2.1.** By Shenghang Yuan, NYU Shanghai.
+**Version 0.3.0 candidate (unreleased).** By Shenghang Yuan, NYU Shanghai.
 [ORCID](https://orcid.org/0009-0008-7434-1103).
 [Versioned release](https://github.com/sy4411-sudo/partial-coverage-ranking-resource/releases/tag/v0.2.1).
+
+The latest public release remains 0.2.1. This working candidate adds downstream
+evaluation and sampling examples; its manuscript is not the published 0.2.1 PDF.
 
 Version 0.2.1 corrects input validation: the first position weight must equal
 1.0. The 0.2.0 verifier does not
@@ -39,6 +42,7 @@ It is a runnable research integration, not a new relevance benchmark or human re
 
 - [Policy exchange](examples/policy_exchange.md): JSON format, verifier and trust boundary.
 - [Run-file adapter](examples/run_files.md): missing scores remain unsupported.
+- [Downstream evaluation](examples/evaluation/README.md): separate gains, expected metrics, sampling and deterministic-policy misuse checks.
 - `python -I examples/trial_workflow.py --output toy-output`: two-query TREC example.
 - `python -I examples/direct_solver_comparison.py --self-check`: nine wrapper/direct-solver equivalence cases.
 - `python -I scripts/analysis/summarize_resource_benchmark.py`: reproduce engineering tables without solving.

@@ -1,0 +1,7 @@
+{
+  "reference_gain": {"a": 1.0, "fixed": 0.0, "b": 0.0},
+  "source_gain": {"a": 0.0, "fixed": 0.0, "b": 1.0},
+  "small_budget": {"a": 0.0, "fixed": 0.0, "b": 1.0},
+  "no_coverage": {"a": 1.0, "fixed": 0.0, "b": 0.0},
+  "zero_gain": {"a": 0.0, "fixed": 0.0, "b": 0.0}
+}

@@ -168,6 +168,54 @@ def test_claimed_certificate_is_not_an_input(context, policy):
         verify_policy(policy, expected_context=context)
 
 
+@pytest.mark.parametrize("first_weight", [5e-324, 1e-300, 0.5, 2.0, 1e308])
+def test_nonunit_weight_scale_rejected_before_exposure(first_weight):
+    context = {
+        "target_ranking": ["a", "b"],
+        "supported_items": ["a", "b"],
+        "position_weights": [first_weight],
+        "risk_budget": 0.0,
+    }
+    policy = {
+        "schema": SCHEMA,
+        "context": copy.deepcopy(context),
+        "mixture": [
+            {"probability": 0.6, "ranking": ["a", "b"]},
+            {"probability": 0.4, "ranking": ["b", "a"]},
+        ],
+    }
+    # At 5e-324, 0.6*w rounds to w and 0.4*w to zero. Previously this
+    # falsely certified regret zero, although the normalized regret is 0.4.
+    with pytest.raises(PolicyFormatError, match="must equal 1.0"):
+        verify_policy(policy, expected_context=context)
+    with pytest.raises(PolicyFormatError, match="must equal 1.0"):
+        optimize_policy(context, source_scores={"a": 0.0, "b": 1.0})
+
+
+def test_unit_scale_preserves_counterexample_regret():
+    context = {
+        "target_ranking": ["a", "b"],
+        "supported_items": ["a", "b"],
+        "position_weights": [1.0],
+        "risk_budget": 0.0,
+    }
+    policy = {
+        "schema": SCHEMA,
+        "context": copy.deepcopy(context),
+        "mixture": [
+            {"probability": 0.6, "ranking": ["a", "b"]},
+            {"probability": 0.4, "ranking": ["b", "a"]},
+        ],
+    }
+    with pytest.raises(PolicyFormatError, match="exceeds"):
+        verify_policy(policy, expected_context=context)
+    context["risk_budget"] = 0.4
+    policy["context"] = copy.deepcopy(context)
+    assert verify_policy(policy, expected_context=context)["regret"] == pytest.approx(
+        0.4
+    )
+
+
 def test_verifier_without_site_packages(tmp_path, context, policy):
     context_path, policy_path = tmp_path / "context.json", tmp_path / "policy.json"
     context_path.write_text(json.dumps(context), encoding="utf-8")

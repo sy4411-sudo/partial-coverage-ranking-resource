@@ -1,6 +1,6 @@
 {
   "schema": "ranking.public-distribution.v1",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "scope": "allowlisted software, invented examples, aggregate evidence and manuscript",
   "files": [
     {
@@ -20,18 +20,18 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 754,
-      "sha256": "65c8a8546b3579b8f5d0f4796cc97752e207e2d7eb76358c2b90d34dc636fd62"
+      "bytes": 1691,
+      "sha256": "732dfdc6273cfb671bce60b447f7b53a6265a7e769e39abd916ec9db7a8441ef"
     },
     {
       "path": "CITATION.cff",
       "bytes": 581,
-      "sha256": "5818068ba94bbdf69b78f17185dc38f9c896ab50382146be9131f1e9ca305ccd"
+      "sha256": "9e82a1b236ab221b10e17ceff5f0836112d40eaa294b61198725810d709a9aec"
     },
     {
       "path": "EVIDENCE.md",
-      "bytes": 2332,
-      "sha256": "679fc065ec9950b8310500f7027555ed13a54d0ea7258d9a4d22ee614f57b1d8"
+      "bytes": 2360,
+      "sha256": "67da5e5a2a57b1012b096a6625ae8f65c8aae3de2d684f0fa06764a7fab4115f"
     },
     {
       "path": "examples/direct_solver_comparison.py",
@@ -45,8 +45,8 @@
     },
     {
       "path": "examples/policy_exchange.md",
-      "bytes": 6211,
-      "sha256": "7a6151eaf7c8d15462bb3c701958dec1019ff571ca38b0f6babc4a5f4d1d45df"
+      "bytes": 7099,
+      "sha256": "dd68576bdc5ae48e217521145c884a2134dd88bf10cfff36afa1c6e7802a221f"
     },
     {
       "path": "examples/policy_mixture.json",
@@ -125,8 +125,8 @@
     },
     {
       "path": "metric_aligned_ranking/policy_io.py",
-      "bytes": 11515,
-      "sha256": "d06f58c7d3c720df5458440e8968a0f9c8dcf7d3a355a8c42363f32e60f46657"
+      "bytes": 11953,
+      "sha256": "e30229ff7e61cf1fd5ae6776ce6bdefeeeedf7fa95df1a9e24eb336156798987"
     },
     {
       "path": "metric_aligned_ranking/resource_benchmark.py",
@@ -150,18 +150,18 @@
     },
     {
       "path": "paper/resource/main.tex",
-      "bytes": 26688,
-      "sha256": "c24a106268963ded0b86e17533e2bf5a48a1614c967d8653013bb1a108333f12"
+      "bytes": 31477,
+      "sha256": "2b9ad76a8e749d684cc524aa1555c5239b29b662848f10ab9d7650f46cb1cc20"
     },
     {
       "path": "pyproject.toml",
       "bytes": 930,
-      "sha256": "19551e995e895e45f4ce8d8980554c698e9461d072482358a6a647a02dd3e20b"
+      "sha256": "f0da55f7fd4bf9ec841c62b00651ca89aee1406406fc366d11f90f4fa49f8c03"
     },
     {
       "path": "README.md",
-      "bytes": 4425,
-      "sha256": "1813010cf9ec9c523c22969858c622b4786d17119fe4bf07f13e1ce0c4bbdd82"
+      "bytes": 7162,
+      "sha256": "d37c38a942784ec95e3358848870ab0bcc52ab5e369225de50ac7281e209a642"
     },
     {
       "path": "records/case-study-summary.json",
@@ -195,8 +195,8 @@
     },
     {
       "path": "tests/test_policy_io.py",
-      "bytes": 8734,
-      "sha256": "cc1e0d5e3d139c5b4a70d834763a2b92dcc3ae3c2cdf121af840c92b1471a144"
+      "bytes": 10450,
+      "sha256": "e50976eed1fa75f129a75eb883d99f308e0da0efb72b52635ce9cef88260414a"
     },
     {
       "path": "tests/test_resource_benchmark.py",

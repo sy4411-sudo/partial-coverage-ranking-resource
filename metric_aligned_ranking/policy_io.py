@@ -76,6 +76,13 @@ def validate_context(context: object) -> dict:
         left < right for left, right in pairwise(weights)
     ):
         raise PolicyFormatError("position_weights must be positive and non-increasing")
+    # nDCG is scale-invariant in real arithmetic, not at subnormal float scales.
+    # Keep normalization caller-owned so the trusted context is never rewritten.
+    if weights[0] != 1.0:
+        raise PolicyFormatError(
+            "position_weights[0] must equal 1.0; normalize weights before "
+            "constructing the trusted context"
+        )
     try:
         if not math.isfinite(math.fsum(weights)):
             raise OverflowError
@@ -97,7 +104,8 @@ def verify_policy(policy: object, *, expected_context: object) -> dict:
 
     Probabilities are normalized by their sum, which must first be within
     1e-12 of one. Sampling must use these normalized probabilities, not the
-    argmax ranking. The float certificate uses absolute tolerance 1e-9.
+    argmax ranking. The float certificate uses absolute tolerance 1e-9 and
+    requires position_weights[0] == 1.0 to avoid arbitrary overall float scales.
     """
     expected = validate_context(expected_context)
     data = _object(policy, {"schema", "context", "mixture"}, "policy")

@@ -10,8 +10,9 @@ policy round trips. Automated checks are not independent human reuse.
 
 `records/resource/engineering-resource-v2-20261007.json` is the original synthetic
 engineering measurement record from software 0.1.0. It has no raw user data.
-Its source digests identify the measured implementation. Release 0.2.0 does not
-claim its newer diagnostics and retrieval example were timed in that record.
+Its source digests identify the measured implementation. Releases 0.2.0 and 0.2.1
+do not claim their newer diagnostics, retrieval example or input validation were
+timed in that record.
 The summary script regenerates descriptive tables from the record; rerunning
 the harness produces new timings, not bit-identical historical measurements.
 The matched-support cases were exploratory corrections to an initial confounded

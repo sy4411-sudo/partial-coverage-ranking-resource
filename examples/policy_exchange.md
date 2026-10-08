@@ -58,7 +58,7 @@ The context has exactly four fields:
 |---|---|
 | `target_ranking` | Complete ranking of unique, nonempty string IDs |
 | `supported_items` | Unique subset with source scores; empty support is allowed |
-| `position_weights` | Positive, non-increasing weights through the cutoff; remaining slots have zero weight |
+| `position_weights` | Positive, non-increasing weights with first entry exactly 1.0; remaining slots have zero weight |
 | `risk_budget` | Nonnegative absolute worst-case expected-nDCG loss relative to the target |
 
 The separate score mapping has exactly the supported IDs as keys and finite
@@ -79,7 +79,7 @@ Neither a timeout nor a numerical failure establishes infeasibility.
 Since package 0.1.1, verification reports also list `supported_items` and
 `unsupported_items` from the checked context. These are coverage facts, not
 predictions of relevance or an instruction to impute missing scores. The
-policy JSON schema and numerical acceptance rules are unchanged. Diagnostics
+policy JSON schema and numerical acceptance rules were unchanged in that release. Diagnostics
 include numeric mass or regret values; batch errors additionally identify
 the query. Error messages and reports can contain your IDs, so share only
 synthetic or suitably redacted reproductions.
@@ -90,6 +90,19 @@ probability mass, and regret above the supplied budget plus `1e-9`. CLI success
 returns exit code 0; rejected inputs return 2 and an error on stderr.
 
 ## Sampling and numerical scope
+
+Since version 0.2.1, the first position weight must equal `1.0`.
+For custom weights, divide by the first weight before constructing the trusted
+context and check that all resulting entries remain finite and positive. The
+interface rejects nonunit scales; it does not silently rewrite either context.
+This preserves the mathematical nDCG ratio while excluding an overall float
+scale at which exposure arithmetic can underflow. It is not an interval proof.
+
+**Version 0.2.0 limitation:** the published verifier lacks this input restriction.
+For example, a first weight of `5e-324` can make a mixture with actual regret
+`0.4` incorrectly pass a zero budget. Do not use that release with nonunit weight
+scales. Its bundled logarithmic-weight examples already start at `1.0`.
+Upgrade to 0.2.1 and re-verify custom policies; the 0.2.0 assets have not been replaced.
 
 Probabilities must sum to one within `1e-12`; the represented policy uses each
 probability divided by that sum. The report records the original sum. Larger

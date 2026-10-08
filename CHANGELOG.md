@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.1 - 2026-10-08
+
+The portable policy interface now requires the first position weight to equal
+1.0. Version 0.2.0 accepted arbitrary positive overall scales, allowing exposure
+underflow to falsely accept a zero budget for a mixture with actual regret 0.4
+when its sole weight was 5e-324. Both optimization requests and recipient checks
+now reject nonunit scales before exposure arithmetic. Callers must normalize
+custom weights before constructing their trusted context. The JSON field layout
+is unchanged, but this is an intentionally stricter input-acceptance rule.
+
+Adds maintenance/compatibility guidance and a discussion of coverage and
+reference bias. No historical optimizer, oracle, experiment or release asset is
+changed. These corrections are released separately from 0.2.0; its assets remain
+unchanged. Upgrade to 0.2.1 and re-verify any custom policies using a caller-owned
+context whose first position weight is 1.0.
+
 ## 0.2.0 - 2026-10-07
 
 First clean public resource release. Adds a text-to-policy integration using

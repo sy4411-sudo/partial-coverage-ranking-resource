@@ -20,18 +20,18 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2333,
-      "sha256": "05a047997af7826f342255823c07a23511e86f5580b4bd18c3d54cb5e6394a0c"
+      "bytes": 2405,
+      "sha256": "be452aa9be6b430caf4287c6ee185a67a661229e904dffc9ef8e34277bf89d6d"
     },
     {
       "path": "CITATION.cff",
-      "bytes": 535,
-      "sha256": "d842acc35c401e106ec8d29fc69f50e147cde64ddb2c95001efa92aeb1f63768"
+      "bytes": 581,
+      "sha256": "05ea553eec3a97ad95fe4a50786af2c4f3de81617b9275a8f2f16ad51fb9bf0c"
     },
     {
       "path": "EVIDENCE.md",
-      "bytes": 3011,
-      "sha256": "67252165e08124dd0a9eaf03f13c7cb080b985040a2c6ba93a798a5cd12e7862"
+      "bytes": 2998,
+      "sha256": "6ab195b763d640402a81968b7a8c59886e76126bd335ca2e597587909701c401"
     },
     {
       "path": "examples/direct_solver_comparison.md",
@@ -180,8 +180,8 @@
     },
     {
       "path": "paper/resource/main.tex",
-      "bytes": 34649,
-      "sha256": "e56ed1766e5bb8e8d0d2f357c19ed63fb1e54126d532dcce4aa00ad95354228c"
+      "bytes": 34264,
+      "sha256": "019941d34e77b1f2f238a46f0c65c93cc0f2bee15fb8714f9c376ee496ef115e"
     },
     {
       "path": "pyproject.toml",
@@ -190,8 +190,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 7488,
-      "sha256": "b13bee610dfb856bb3dcf58a4798aced8bc9e2b5943d77b6ab4e7af3c7797e82"
+      "bytes": 7493,
+      "sha256": "facb05c0452d876e656328628e772848ba156e058b04f2038c6b25e79f9df137"
     },
     {
       "path": "records/case-study-summary.json",

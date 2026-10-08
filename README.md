@@ -1,13 +1,13 @@
 # Metric-aligned ranking: a portable policy resource
 
-**Version 0.3.0 candidate (unreleased).** By Shenghang Yuan, NYU Shanghai.
+**Version 0.3.0.** By Shenghang Yuan, NYU Shanghai.
 [ORCID](https://orcid.org/0009-0008-7434-1103).
-[Versioned release](https://github.com/sy4411-sudo/partial-coverage-ranking-resource/releases/tag/v0.2.1).
+[Versioned release](https://github.com/sy4411-sudo/partial-coverage-ranking-resource/releases/tag/v0.3.0).
 
-The latest public release remains 0.2.1. This working candidate adds downstream
-evaluation and sampling examples; its manuscript is not the published 0.2.1 PDF.
+Version 0.3.0 adds downstream evaluation and sampling examples and an updated
+resource manuscript. The 0.2.0 and 0.2.1 release assets remain unchanged.
 
-Version 0.2.1 corrects input validation: the first position weight must equal
+The input correction introduced in 0.2.1 is retained: the first position weight must equal
 1.0. The 0.2.0 verifier does not
 enforce that condition and can falsely accept policies at subnormal overall
 weight scales. Upgrade and re-verify custom policies with unit-leading weights;
@@ -67,12 +67,12 @@ acceptance uses regret tolerance 1e-9 and probability-mass tolerance 1e-12.
 [Complete resource manuscript](paper/resource/main.tex) and the release PDF
 describe the resource, interfaces, guarantee scope, limitations and bounded case.
 This is an **unsubmitted author manuscript**, not an accepted ECIR paper.
-The 0.2.1 source manuscript and PDF include the correction and revise the earlier
-0.2.0 manuscript. The old release's assets are unchanged.
+The 0.3.0 source manuscript and PDF describe the downstream examples alongside
+the existing integration and evidence. Earlier release manuscripts remain available.
 
 The saved engineering sweep has 26 workload/formulation combinations and 78
 repetitions on one Windows machine. Measurements were made with implementation
-0.1.0, not relabeled as 0.2.1 timings. Version 0.2.0 added a retrieval integration;
+0.1.0, not relabeled as 0.3.0 timings. Version 0.2.0 added a retrieval integration;
 the underlying optimizer and certificate oracle are unchanged.
 [Evidence notes](EVIDENCE.md) explain which records can be regenerated and
 which are read-only historical aggregates. Human independent reuse remains pending.

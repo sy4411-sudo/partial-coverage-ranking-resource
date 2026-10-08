@@ -3,6 +3,7 @@ message: "Please cite the versioned software if you reuse it."
 title: "Portable Verifiable Policies for Reranking with Partial Source Coverage"
 type: software
 version: 0.3.0
+date-released: 2026-10-08
 authors:
   - family-names: Yuan
     given-names: Shenghang
@@ -11,4 +12,4 @@ authors:
     orcid: "https://orcid.org/0009-0008-7434-1103"
 license: Apache-2.0
 repository-code: "https://github.com/sy4411-sudo/partial-coverage-ranking-resource"
-url: "https://github.com/sy4411-sudo/partial-coverage-ranking-resource"
+url: "https://github.com/sy4411-sudo/partial-coverage-ranking-resource/releases/tag/v0.3.0"

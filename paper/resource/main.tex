@@ -33,8 +33,7 @@ The contribution is a tested exchange interface for a specific class of
 reranking experiments, not a new regret theorem. The evidence establishes
 executable integration and numerical consistency; independent human reuse
 and retrieval-effectiveness improvement are not established. Code, examples
-and aggregate evidence are available in the Apache-2.0 release 0.2.1;
-the downstream recipes are an unreleased extension in this working draft.
+and aggregate evidence are available in the Apache-2.0 release 0.3.0.
 \keywords{Research software \and Stochastic ranking \and Partial coverage \and Policy verification}
 \end{abstract}
 
@@ -452,12 +451,11 @@ contains the tests, not just a claimed count.
 The CI workflow builds a noneditable wheel and first verifies a sample policy
 before installing SciPy. It then installs pinned retrieval/test dependencies,
 runs the retrieval and direct-solver examples and executes the portable tests
-on Windows and Ubuntu. Both hosted jobs for release 0.2.0 passed 145 tests.
-These are installability and interface checks, not independent human adoption.
-The unreleased extension adds 22 downstream tests; all 173 portable tests passed
-locally. A fresh environment evaluated the text-workflow policies using the
-noneditable wheel without SciPy. This is local installability evidence, not
-hosted cross-platform validation of the candidate.
+on Windows and Ubuntu. Both hosted jobs for version 0.3.0 passed 173 tests,
+including 22 downstream tests, and completed the text-to-evaluation commands.
+A fresh local environment also evaluated those policies using the noneditable
+wheel without SciPy. These are installability and interface checks, not
+independent human adoption or a production sampler audit.
 
 \section{A Bounded Negative Case and Its Lesson}
 The motivating MIND-small study \cite{mind} illustrates the distinction between
@@ -490,17 +488,14 @@ comparison scientifically informative. Neither a zero observed mean-risk excess
 nor this small sample establishes a population per-impression violation bound.
 
 \section{Availability, Maintenance and Limitations}
-The latest public release, version 0.2.1, is distributed at:
+Version 0.3.0 is distributed at:
 \begin{center}\small
 \url{https://github.com/sy4411-sudo/partial-coverage-ranking-resource}
 \end{center}
 The tagged release contains a source archive, wheel, an author-manuscript
-PDF and SHA-256 checksums. Version 0.2.1 pairs this revised manuscript with the
-numerical-input correction above; the earlier 0.2.0 assets remain unchanged.
-The downstream evaluation examples described here belong to working candidate
-0.3.0, not that released archive. This revised manuscript must not be
-confused with the 0.2.1 release PDF. A subsequent versioned release must include
-the new examples before they can support a submitted resource claim.
+PDF and SHA-256 checksums. Version 0.3.0 includes the downstream evaluation
+examples and this revised manuscript, retaining the numerical-input correction
+introduced in 0.2.1. The earlier 0.2.0 and 0.2.1 release assets remain unchanged.
 The source inventory records the sizes and hashes of
 allowlisted payload files. GitHub releases provide versioned access, but are
 not a cryptographically immutable preservation service. No DOI or PyPI
@@ -548,7 +543,7 @@ This resource makes the boundary between constrained ranking optimization
 and exchanged stochastic policies explicit. It supplies fixed-slot partial
 coverage, full-ID mixtures, recipient-bound verification, TREC interoperability,
 a text-to-policy integration and inspectable engineering evidence.
-The working extension connects that output to explicit evaluation-only gains,
+The downstream example connects that output to explicit evaluation-only gains,
 finite-mixture metrics and sampling diagnostics, including cases where
 deterministic substitutions change or invalidate the policy.
 It is intended for researchers who need to transfer and check this particular
@@ -562,6 +557,7 @@ verify that a comparison actually activates before scaling the experiment.
 AI tools assisted coding, checks and drafting; the author retains responsibility.
 Automated checks are not independent human validation.
 
+\clearpage
 \begin{thebibliography}{15}
 \bibitem{diaz} Diaz, F., Mitra, B., Ekstrand, M.D., Biega, A.J., Carterette, B.:
 Evaluating Stochastic Rankings with Expected Exposure. SIGIR, 113--122 (2020).

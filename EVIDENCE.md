@@ -10,7 +10,7 @@ policy round trips. Automated checks are not independent human reuse.
 
 `records/resource/engineering-resource-v2-20261007.json` is the original synthetic
 engineering measurement record from software 0.1.0. It has no raw user data.
-Its source digests identify the measured implementation. Releases 0.2.0 and 0.2.1
+Its source digests identify the measured implementation. Releases 0.2.0 through 0.3.0
 do not claim their newer diagnostics, retrieval example or input validation were
 timed in that record.
 The summary script regenerates descriptive tables from the record; rerunning
@@ -20,7 +20,7 @@ scaling comparison, not a preregistered experiment.
 
 ## Downstream use checks
 
-The unreleased 0.3.0 candidate additionally contains a downstream evaluation
+Version 0.3.0 additionally contains a downstream evaluation
 recipe. Its text-workflow gains are illustrative assignments, not independent
 relevance judgments. Five constructed cases have hand-computable expected
 metrics and show both invalid and still-feasible deterministic replacements.

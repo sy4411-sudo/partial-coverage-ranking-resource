@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - unreleased
+## 0.3.0 - 2026-10-08
 
 Adds a solver-free downstream evaluation recipe, separate illustrative gains
 for the text workflow, five hand-computable policy-use cases, and tests of both
@@ -9,7 +9,8 @@ consumer checks complete judgments, calculates expected metrics and reports
 sampling diagnostics. It rechecks deterministic replacements as new policies.
 Adds the previously omitted direct-solver comparison guide to the source
 allowlist. No optimizer, verifier, historical study or released asset changes.
-The revised manuscript is a working draft, not the released 0.2.1 manuscript.
+The accompanying revised manuscript remains unsubmitted; it does not replace
+the 0.2.1 release manuscript or assert new natural-domain effectiveness.
 
 ## 0.2.1 - 2026-10-08
 
